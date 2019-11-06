@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700');
+
+#audio {
+	text-align: center;
+	padding: 20px;
+	font-family: 'Open Sans', sans-serif;
+}
+
+#audio #art {
+	max-width: 350px;
+	width: 100%;
+}
+
+#audio .title {
+	font-size: 2em;
+	font-weight: 600;
+}
+#audio .album {
+	font-size: 1.5em;
+	font-weight: 400;
+}
+#audio .artist {
+	font-size: 1em;
+	font-weight: 700;
+}
+
+button#save {
+	border: 1px solid;
+	position: absolute;
+	bottom: 15px;
+	right: 25px;
+	cursor: pointer;
+}

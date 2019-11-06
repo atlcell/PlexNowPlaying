@@ -1,0 +1,42 @@
+
+<script>
+
+var setColors = function() {
+	var color;
+
+	//console.log(document.location.href + 'thumb?hash='+Math.floor(Math.random() * 10));
+	return color = ImageAnalyzer('/thumb?hash='+Math.floor(Math.random() * 10), function(bgcolor, primaryColor, secondaryColor, detailColor) {
+	  $('html, body').css('background-color', 'rgb(' + bgcolor + ')');
+	  $('.title').css('color', 'rgb(' + primaryColor + ')');
+	  $('.album').css('color', 'rgb(' + secondaryColor + ')');
+	  $('.artist').css('color', 'rgb(' + detailColor + ')');
+	});
+}
+
+var app = function() {
+	$.getJSON('/songs', function(res) {
+
+		var file = res[0].Media[0].Part[0].$.key,
+				fileURL = 'http://10.0.0.173:32400' + file + '?X-Plex-Token=vYF5nUQcaTYNXsvU19EM';
+
+		if( $('audio').attr('src') !== fileURL){
+			$('.title').text(res[0].$.title);
+			$('.album').text(res[0].$.parentTitle);
+			$('.artist').text(res[0].$.grandparentTitle);
+			$('img').attr('src', 'http://10.0.0.173:32400'+ res[0].$.parentThumb + '?X-Plex-Token=vYF5nUQcaTYNXsvU19EM');
+			$('audio').attr('src', fileURL);
+			$('title').html("&#x25b6; " + res[0].$.title + ' | ' + res[0].$.grandparentTitle);
+
+			setColors();
+			//$('img').attr('src', val.$.grandparentThumb); //artist thumb
+		}	
+		
+	});
+}
+
+app();
+
+setInterval(function() {
+	app();
+}, 5000);
+</script>

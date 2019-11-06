@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>#NowPlaying</title>
+		<link rel="stylesheet" href="client/style.css">
+	</head>
+
+	<body>
+		<button id="save">SAVE</button>
+		<main></main>
+	</body>
+
+	<script id="tmpl-audio" type="text/template">
+		<div id="audio">
+			<img src="<%=thumbURL%>" alt="" id="art">
+
+			<h1 class="title" style="color: rgb(<%=primaryColor%>);"><%=title%></h1>
+			<h3 class="album" style="color: rgb(<%=secondaryColor%>);"><%=album%></h3>
+			<h2 class="artist" style="color: rgb(<%=detailColor%>);"><%=artist%></h2>
+
+			<audio controls autoplay src="<%=fileURL%>"></audio> 
+		</div>
+	</script>
+	<script src="client/jquery-2.2.4.min.js"></script>
+	<script src="client/underscore-min.js"></script>
+	<script>
+		//props
+		window.obj = {};
+		window.config = {};
+
+		let audioTemplate = _.template( $('#tmpl-audio').html());
+		let workingHash = document.location.hash.substr(1);
+
+		//save hash
+		const saveHash = function() {
+			$.ajax({
+			    url: '/save', 
+			    type: 'POST', 
+			    contentType: 'application/json', 
+			    data: JSON.stringify(window.obj),
+			    success: function(res) {
+			    	alert('saved: ' + res.hash);
+			    	console.log('//////////SAVED HASH//////////');
+			    	console.log(res.hash);
+			    	document.location.hash = res.hash;
+			    	console.log('//////////SAVED HASH//////////');
+			    }
+			})
+		}
+
+		//render
+		const render = function(res) {
+
+			window.obj = res;
+
+			$('main').html(audioTemplate(res));
+			$('html').css('background-color', 'rgb(' + res.bgcolor + ')');
+			$('title').text(res.title + ' by ' + res.artist + ' | #NowPlaying');
+		}
+
+		//app
+		const app = function(config) {
+
+			window.config = config;
+			
+			//SAVED MEDIA
+			if(workingHash.length > 0) {
+				$.get('/saved/' + workingHash, render);
+				$('button').remove();
+
+			//NOW PLAYING MEDIA
+			} else {
+				$.get('/nowplaying', render);	
+			}
+
+			$('#save').click(saveHash);
+		}
+
+		//init
+		$.get('server/config.json', app);
+	</script>
+</html>
