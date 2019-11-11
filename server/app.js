@@ -35,7 +35,7 @@ app.get('/nowplaying', function (req, res) {
 	request(sessionURL, function (error, response, body) {
 			parseString(body, function (err, result) {
 
-				if(!err){
+				if(!err && result.MediaContainer.length != 0){
 
 					var DOM_OBJ = {};
 					var currentSongs = JSON.parse(JSON.stringify(result.MediaContainer.Track)),
@@ -95,23 +95,46 @@ app.get('/nowplaying', function (req, res) {
 //hashed/saved OBJ
 app.get('/saved/:hash', function (req, res) {
 	res.setHeader('Content-Type', 'application/json');
-	res.sendFile(path.join(__dirname + `/../states/${req.params.hash}.json`));
+	res.sendFile(path.join(__dirname + `/../stash/${req.params.hash}/meta.json`));
 })
 
 //hashed/saved OBJ
 app.post('/save', function (req, res) {
 
 	var saveObj = req.body;
+	var stashPath = path.join(__dirname + '/../stash/' + saveObj.hash)
 
+	console.log(saveObj.thumbURL);
+	console.log(saveObj.fileURL);
 
-	//make path
-	mkdirp(path.join(__dirname + '/../stash/' + req.body.hash));
+	mkdirp(stashPath);
 
 	//save thumb
-	request({url: req.body.thumbURL, encoding: 'binary'}).pipe(fs.createWriteStream(path.join(__dirname + '/../stash/' + req.body.hash + '/thumb')));
-	
+	request({url: saveObj.thumbURL, encoding: 'binary'}).pipe(fs.createWriteStream(path.join(__dirname + '/../stash/' + saveObj.hash + '/thumb')));
+
 	//save media
-	//request({url: req.body.fileURL, encoding: 'binary'}).pipe(fs.createWriteStream(path.join(__dirname + '/../stash/' + req.body.hash + '/audio')));
+	request({url: saveObj.fileURL, encoding: 'binary'}).pipe(fs.createWriteStream(path.join(__dirname + '/../stash/' + saveObj.hash + '/audio')));
+
+	//save meta
+	fs.writeFile(path.join(__dirname + '/../stash/' + saveObj.hash + '/meta.json'), JSON.stringify(saveObj), { flag: 'wx' }, function(err) {
+	    if (!err) {
+		    res.setHeader('Content-Type', 'application/json');
+			res.send({
+				saved : true,
+				hash : saveObj.hash
+			}); 
+	    } else {
+	    	console.log(err);
+	    }
+
+	});
+
+
+	/*
+
+	//make path
+
+	
 
 	request.get({url: req.body.fileURL, encoding: 'binary'}).then(function (res) { 
 		const buffer = Buffer.from(res, 'utf8'); 
@@ -121,17 +144,7 @@ app.post('/save', function (req, res) {
 	saveObj.fileURL = 'stash/' + req.body.hash + '/audio';
 	saveObj.thumbURL = 'stash/' + req.body.hash + '/thumb';
 
-	//save meta
-	fs.writeFile(path.join(__dirname + '/../states/' + req.body.hash + '.json'), JSON.stringify(req.body), { flag: 'wx' }, function(err) {
-	    if (!err) {
-		    res.setHeader('Content-Type', 'application/json');
-			res.send({
-				saved : true,
-				hash : req.body.hash
-			}); 
-	    }
-
-	});
+	*/
 
 });
 
