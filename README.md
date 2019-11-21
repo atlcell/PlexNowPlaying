@@ -1,6 +1,5 @@
 # PLEX #NowPlaying
-![NowPlaying](_screenshots/Future.png)
-![NowPlaying](_screenshots/Travis.png)
+![NowPlaying](_screenshots/screen.jpg)
 
 PLEX #NowPlaying (PlexNP) is a simple node.js app that allows you to share a saved state of your currently open Plex Media Session.
 
