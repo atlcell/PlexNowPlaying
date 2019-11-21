@@ -1,17 +1,28 @@
 # PLEX #NowPlaying
+![NowPlaying](_screenshots/v1.png)
 
-<div align="center">
-![SUPER FUTURE](_screenshots/v1.png)
-</div>
+PLEX #NowPlaying (PlexNP) is a simple node.js app that allows you to share a saved state of your currently open Plex Media Session.
 
-PLEX #NowPlaying (PnP) is a simple node.js app that shares your current PLEX session. The app is simply a node script that accesses your PLEX server and proxies the data to a consumable javascript object.
+The Workflow is something along the lines up
 
-## Usage
+1. You're listening to music or watching a movie
+2. You Pull up PlexNP, and choose a state to save and share
+3. This State is saved under a unique hash, which can be shared depending on hosting parameters
+4. Profit
+
+
+## Install
+```
+npm install
+```
+
+- you need to configure `config.json` with your Plex Token, and other attributes you want to show in the OG Graph XNL
 
 ```
 npm start
-npm stop
-```
+````
+
+Deploy via PM2 for production.
 
 ## To-Do
 - [ ] Continue updating README
