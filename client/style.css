@@ -24,10 +24,18 @@
 	font-weight: 700;
 }
 
-button#save {
-	border: 1px solid;
+/* button#save {*/
+#buttons {
 	position: absolute;
 	bottom: 15px;
 	right: 25px;
+}
+
+#buttons a {
+	border: 1px solid;
 	cursor: pointer;
+	padding: 5px;
+	text-decoration: none;
+	color: fff;
+	font-family: serif;
 }

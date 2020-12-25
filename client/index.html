@@ -8,7 +8,10 @@
 	</head>
 
 	<body>
-		<button id="save">SAVE</button>
+		<div id="buttons">
+			<a href="/">HOME</a>
+			<a id="save" href="#">SAVE</a>
+		</div>
 		<main></main>
 	</body>
 
@@ -68,14 +71,19 @@
 			//SAVED MEDIA
 			if(workingHash.length > 0) {
 				$.get('/saved/' + workingHash, render);
-				$('button').remove();
+				$('#buttons').remove();
 
 			//NOW PLAYING MEDIA
 			} else {
 				$.get('/nowplaying', render);	
 			}
 
-			$('#save').click(saveHash);
+			$('#save').click(function(e){
+
+				saveHash();
+				e.stopDefault();
+				e.stopPropagation();
+			});
 		}
 
 		//init

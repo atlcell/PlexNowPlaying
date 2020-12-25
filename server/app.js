@@ -1,6 +1,15 @@
-const express = require('express');
-const app = express();
-////////////////////////////////////
+/******************************************
+  _____  _           _   _               _____  _             _             
+ |  __ \| |         | \ | |             |  __ \| |           (_)            
+ | |__) | | _____  _|  \| | _____      _| |__) | | __ _ _   _ _ _ __   __ _ 
+ |  ___/| |/ _ \ \/ / . ` |/ _ \ \ /\ / /  ___/| |/ _` | | | | | '_ \ / _` |
+ | |    | |  __/>  <| |\  | (_) \ V  V /| |    | | (_| | |_| | | | | | (_| |
+ |_|    |_|\___/_/\_\_| \_|\___/ \_/\_/ |_|    |_|\__,_|\__, |_|_| |_|\__, |
+                                                         __/ |         __/ |
+                                                        |___/         |___/ 
+******************************************/
+
+//Lib Import
 let path = require('path');
 let fs = require('fs');
 let bodyParser = require('body-parser');
@@ -8,41 +17,51 @@ let colors = require('./colors');
 let md5 = require("blueimp-md5");
 let mkdirp = require('mkdirp');
 
-
-
+//App Config
 let config = require('./config');
 let request = require('request');
-//let rq = require('request-promise');
 let parseString = require('xml2js').parseString;
-//let hostURL = 'http://192.168.1.44:32400';
-let hostURL = 'https://192-168-1-44.36a853b665d5414290d5395b68b16037.plex.direct:32400';
+let hostURL = config.url;
 let sessionURL = hostURL + '/status/sessions?X-Plex-Token=' + config.token;
 
-
-//static
+//App
+const express = require('express');
+const app = express();
 app.use(express.static(__dirname + '/..'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+//Index Page
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname + '/../client/index.html'));
 })
 
-//now playing OBJ
+//Get Media Object
 app.get('/nowplaying', function (req, res) {
-
-
 	request(sessionURL, function (error, response, body) {
 			parseString(body, function (err, result) {
 
-				if(!err && result.MediaContainer.length != 0){
+				/*
+				console.log('===============');
+				console.log(typeof result);
+				console.log(result);
+				console.log(typeof result.MediaContainer);
+				console.log(result.MediaContainer);				
+				console.log(typeof result.MediaContainer['$']);
+				console.log(result.MediaContainer['$']);
+				console.log('===============');
+				*/
+
+				if(!err && result.MediaContainer['$'].size != '0'){
 
 					var DOM_OBJ = {};
-					var currentSongs = JSON.parse(JSON.stringify(result.MediaContainer.Track)),
-						currentSongsNumber = result.MediaContainer.Track.length,
-						clientSongs = [];
+					var currentSongs = JSON.parse(JSON.stringify(result.MediaContainer.Track));
 
 						currentSongs.forEach(function(val, index) {
+
+							console.log('===============');
+							console.log(val.Media);
+							console.log('===============');
 
 							var parentThumb = val.$.parentThumb;
 							var parentTitle = val.$.parentTitle;
@@ -58,28 +77,24 @@ app.get('/nowplaying', function (req, res) {
 							colors.ImageAnalyzer(thumbURL, function(bgcolor, primaryColor, secondaryColor, detailColor) {
 
 								DOM_OBJ = {
-									parentThumb: parentThumb,
-									album: parentTitle,
-									title: title,
-									artist: originalTitle,
-									file: file,
-									fileURL: fileURL,
-									thumbURL: thumbURL,
-									codec: codec,
-									/////////////////
+									parentThumb: parentThumb || 'unknown',
+									album: parentTitle || 'unknown',
+									title: title || 'unknown',
+									artist: originalTitle || '',
+									file: file || 'unknown',
+									fileURL: fileURL || 'unknown',
+									thumbURL: thumbURL || 'unknown',
+									codec: codec || 'unknown',
 									hash: md5(title),
-									bgcolor: "0, 0, 0",
-									primaryColor: "0, 0, 0",
-									secondaryColor: "0, 0, 0",
-									detailColor: "0, 0, 0"
+									/////////////////
+									detailColor: detailColor || "0, 0, 0",
+									bgcolor: bgcolor || "0, 0, 0",
+									primaryColor: primaryColor || "0, 0, 0",
+									secondaryColor: secondaryColor || "0, 0, 0",
+									detailColor: detailColor || "0, 0, 0"
 								}
 								
-								DOM_OBJ.bgcolor = bgcolor;
-								DOM_OBJ.primaryColor = primaryColor;
-								DOM_OBJ.secondaryColor = secondaryColor;
-								DOM_OBJ.detailColor = detailColor;
-
-								//console.log(DOM_OBJ);
+								console.log(DOM_OBJ);
 				
 								res.setHeader('Content-Type', 'application/json');
 					  			res.send(JSON.stringify(DOM_OBJ));
@@ -90,15 +105,22 @@ app.get('/nowplaying', function (req, res) {
 			});
 			
 	});
+
 })
 
-//hashed/saved OBJ
+//Get Saved Media Object
 app.get('/saved/:hash', function (req, res) {
 	res.setHeader('Content-Type', 'application/json');
 	res.sendFile(path.join(__dirname + `/../stash/${req.params.hash}/meta.json`));
 })
 
-//hashed/saved OBJ
+//Convert Saved Hash to .mp4 for Social Media
+app.get('/convert/:hash', function (req, res) {
+	//Get the saved media hash
+	//Save the media hash as an mp4
+})
+
+//Save Media Object
 app.post('/save', function (req, res) {
 
 	var saveObj = req.body;
@@ -148,6 +170,5 @@ app.post('/save', function (req, res) {
 
 });
 
-//app
+//Server
 app.listen(config.port, () => console.log('#PlexNowPlaying running on port ' + config.port))
-
