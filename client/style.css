@@ -1,4 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700');
+main {
+	width: 1080px;
+	height: 1920px;
+	margin: 0 auto;
+}
 
 #audio {
 	text-align: center;

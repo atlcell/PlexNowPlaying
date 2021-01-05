@@ -28,6 +28,7 @@
 	</script>
 	<script src="client/jquery-2.2.4.min.js"></script>
 	<script src="client/underscore-min.js"></script>
+	<script src="client/html2canvas.js"></script>
 	<script>
 		//props
 		window.obj = {};
@@ -59,7 +60,7 @@
 			window.obj = res;
 
 			$('main').html(audioTemplate(res));
-			$('html').css('background-color', 'rgb(' + res.bgcolor + ')');
+			$('html,main').css('background-color', 'rgb(' + res.bgcolor + ')');
 			$('title').text(res.title + ' by ' + res.artist + ' | #NowPlaying');
 		}
 
@@ -81,12 +82,43 @@
 			$('#save').click(function(e){
 
 				saveHash();
-				e.stopDefault();
+				//e.stopDefault();
 				e.stopPropagation();
 			});
 		}
 
 		//init
+
+		//set Timeout
 		$.get('server/config.json', app);
+
+		/*
+
+
+		setInterval( function(){
+			app('update');
+		}, 2000);
+		*/
+
+
+		/*
+		Create Image for Social Media Object
+		html2canvas(document.querySelector("body"), {
+			allowTaint: 1,
+			background: 'null',
+			width: '1080px',
+			height: '1920px'
+		}).then(canvas => {
+		    document.body.appendChild(canvas)
+		});
+		
+		*/
+
+		/*
+
+		html2canvas(document.getElementById('invoice-panel'), { letterRendering: 1, allowTaint : true, onrendered : function (canvas) { } });
+
+		*/
+
 	</script>
 </html>
