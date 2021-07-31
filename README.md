@@ -1,8 +1,10 @@
-PLEX #NowPlaying (PlexNP) is a simple node.js app that allows you to share your currently open Plex Media Sessions.
-
 # PLEX #NowPlaying
-![NowPlaying](_screenshots/screen.jpg)
+PLEX #NowPlaying is a simple node.js app that allows you to share your currently open Plex Media Sessions to social media via the web
+![NowPlaying](screenshots/screen.jpg)
 
+
+
+__________________________
 The Workflow is something along the lines up
 
 1. You're listening to music or watching a movie
